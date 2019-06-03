@@ -379,7 +379,7 @@ class LeastSqOptForDist(object):
         self.data = array(data)
         self.xarray = xarray
         self.modeldist = optdist
-        if optpara == None:
+        if optpara is None:
             self.dist, self.modelpara = SetEstimateDistrib(self.modelfunc)
         else:
             self.dist, _ = SetEstimateDistrib(self.modelfunc)
