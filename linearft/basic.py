@@ -247,7 +247,7 @@ def GetInitParams(estmethod,disttype,data):
             distpara = None
     elif disttype == 'twosidegauss':
         if estmethod == 'leastsq':
-            distpara = arrray([mean(data)+1.0, 1, mean(data)-1, 1])
+            distpara = array([mean(data)+1.0, 1, mean(data)-1, 1])
         elif estmethod == 'MEL':
             distpara = None
     elif disttype == 'gamma':
