@@ -423,6 +423,7 @@ class SwarmData(object):
     def __init__(self, filename):
         self.filename = filename
         self.N = int(filename[(filename.find('Num')+3):filename.find('v0')])
+        print(self.N)
 
         self.LoadBinaryState()
         
