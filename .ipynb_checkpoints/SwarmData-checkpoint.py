@@ -450,7 +450,7 @@ class SwarmData(object):
             sys_info = unpack('<ii',f.read(8))
             tmp = fromfile(f,dtype='<d')
             self.timelen = len(tmp)/(4*sys_info[0])
-            print(len(tmp),sys_info[0])
+            print(len(tmp),sys_info)
             tmp = tmp.reshape(self.timelen, 4*sys_info[0])
             self.ps_data = tmp
         
