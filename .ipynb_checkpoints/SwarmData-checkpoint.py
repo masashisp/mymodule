@@ -423,7 +423,6 @@ class SwarmData(object):
     def __init__(self, filename):
         self.filename = filename
         self.N = int(filename[(filename.find('Num')+3):filename.find('v0')])
-        print(self.N)
 
         self.LoadBinaryState()
         
@@ -450,9 +449,9 @@ class SwarmData(object):
         with open(self.filename, 'rb') as f:
             sys_info = unpack('<ii',f.read(8))
             tmp = fromfile(f,dtype='<d')
-            print(sys_info, tmp)
+            
             self.timelen = len(tmp)/(4*sys_info[0])
-            print(len(tmp),sys_info)
+            print(self.timelen, 4*sys_info[0])
             tmp = tmp.reshape(self.timelen, 4*sys_info[0])
             self.ps_data = tmp
         
