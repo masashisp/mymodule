@@ -31,13 +31,11 @@ def dualgauss(x, p):
     return ( ( p[1] * sqrt(2.0)*exp(-0.5*(p[1]**2)*(x[0]-p[0])**2) ) / (4.0*sqrt(pi)) ) * np.erf(x[1]-x[0] + p[0])
 
 def twosidegauss(x, p):
+    """    
+    p[0] : mu
+    p[1] : inverse of sigma
     """
-    p[0] : mu1
-    p[1] : inverse of sigma1
-    p[2] : mu2
-    p[3] : inverse of sigma2
-    """
-    return 0.5*( p[1] * sqrt(2.0)*exp(-0.5*(p[1]**2)*(x-p[0])**2) ) + 0.5*( p[3] * sqrt(2.0)*exp(-0.5*(p[3]**2)*(x-p[2])**2) )
+    return 0.5*( p[1] * sqrt(2.0)*exp(-0.5*(p[1]**2)*(x-p[0])**2) ) + 0.5*( p[1] * sqrt(2.0)*exp(-0.5*(p[1]**2)*(x+p[0])**2) )
 
 def gauss_cum(x, p):
     """
@@ -94,6 +92,26 @@ def weibull(x, p):
     return ans
     # return ( (p[0]/p[1])*(x/p[1])**(p[0]-1) )*exp(-(x/p[1])**p[0])
 
+def twosideweibull(x, p):
+    """
+    p[0] : k, shape
+    p[1] : inverse of nu, scale
+    """
+    if p[0] < 0.0:
+        p[0] = 0.0
+        
+    if isinstance(x, (int, float, complex)) and x<0.0:
+        ans = 0.0
+    else:
+        x = array(x)
+        xpos = np.copy(x)
+        xneg = np.copy(x)
+        xpos[x<0.0] = 0.0
+        xneg[x>0.0] = 0.0
+        ans =  0.5*( (p[0]*p[1])*( (xpos*p[1])**(p[0]-1) )*exp( -( (xpos*p[1])**p[0] ) ) + (p[0]*p[1])*( (-xneg*p[1])**(p[0]-1) )*exp( -( (-xneg*p[1])**p[0] ) ) )
+    return ans
+    # return ( (p[0]/p[1])*(x/p[1])**(p[0]-1) )*exp(-(x/p[1])**p[0])
+
 def maxwell(x,p):
     """
     p[0] : alpha, shape corresponding to m/2kbT
@@ -139,11 +157,37 @@ def MittagLeffler(data,p,itr=171):
             s[i] += double(tmp)
     return (p[1]/pi)*s
 
-# def TwoSideML(data, p, itr=171):
-#     '''
-#     Two-side Mittag-Leffler Distribution
-    
-#     '''
+def TwoSideMLMittagLeffler(data, p, itr=171):
+    '''
+    Two-side Mittag-Leffler Distribution
+    p[0] : alpha, shape 0 < alpha < 1
+    p[1] : inverse of c, scale
+    itr  : iteration to calculate : spsp.gamma has 'inf' larger than 171 
+    '''
+    data = double(data)
+    if p[0] < 0.0:
+        p[0] = 0.0
+    elif p[0] > 1.0:
+        p[0] = 1.0
+    p = double(p)
+    ks = double(list(range(1,itr)))
+    s = zeros(len(data),dtype=double)
+    # s = double(s)
+    # coeff = [ ( spsp.gamma(p[0]*k) * sin(pi*p[0]*k) )/spsp.gamma(k) for k in ks ]
+    # for i,x in enumerate(data):
+    #     numpy.cumsum([ (-x*p[1])**(k-1)*coeff[j] for j,k in enumerate(ks) ],dtype=double)
+    for i,x in enumerate(data):
+        if x < 0:
+            x = -x
+        for k in ks:
+            tmp = 0.5*( ((-x*p[1])**(k-1) ) * spsp.gamma(p[0]*k) * sin(pi*p[0]*k) )/spsp.gamma(k)
+            # print tmp
+            if tmp != tmp: # if the tmp has nan, do not add to s[i]
+                break
+            elif tmp == float("inf") or tmp == float("-inf"):
+                break
+            s[i] += double(tmp)
+    return (p[1]/pi)*s
 
 def poissondist(x,p):
     return poisson.pdf(x,p)
@@ -195,7 +239,7 @@ def SetEstimateDistrib(disttype):
         paranames = [r'$\mu$',r'$\sigma$']
         dist = dualgauss
     elif disttype == 'twosidegauss':
-        paranames = [r'$\mu_1$', r'$\sigma_1$', r'$\mu_2$', r'$\sigma_2$']
+        paranames = [r'$\mu$', r'$\sigma$']
         dist = twosidegauss
     elif disttype == 'gauss_cum':
         paranames = [r'$\mu$',r'$\sigma$']
@@ -247,7 +291,7 @@ def GetInitParams(estmethod,disttype,data):
             distpara = None
     elif disttype == 'twosidegauss':
         if estmethod == 'leastsq':
-            distpara = array([mean(data)+1.0, 1, mean(data)-1, 1])
+            distpara = array([1.0, 1.])
         elif estmethod == 'MEL':
             distpara = None
     elif disttype == 'gamma':
