@@ -37,7 +37,7 @@ def twosidegauss(x, p):
     p[2] : mu2
     p[3] : inverse of sigma2
     """
-    return 0.5*( p[1] * np.sqrt(2.0)*np.exp(-0.5*(p[1]**2)*(x-p[0])**2) ) + 0.5*( p[3] * np.sqrt(2.0)*np.exp(-0.5*(p[3]**2)*(x-p[2])**2) )
+    return 0.5*( p[1] * sqrt(2.0)*exp(-0.5*(p[1]**2)*(x-p[0])**2) ) + 0.5*( p[3] * sqrt(2.0)*exp(-0.5*(p[3]**2)*(x-p[2])**2) )
 
 def gauss_cum(x, p):
     """
@@ -215,7 +215,7 @@ def SetEstimateDistrib(disttype):
     elif disttype == 'maxwell':
         paranames = [r'$\alpha$',r'$m$']
         dist = maxwell
-    elif disttype == 'mittagleffler':
+    elif disttype == 'mittagleffler' or disttype == 'MittagLeffler':
         paranames = [r'$\alpha$',r'$c$']
         dist = MittagLeffler
     elif disttype == 'poisson':
@@ -379,10 +379,10 @@ class LeastSqOptForDist(object):
         self.data = array(data)
         self.xarray = xarray
         self.modeldist = optdist
-        if optpara is None:
-            self.dist, self.modelpara = SetEstimateDistrib(self.modelfunc)
+        if type(optpara) == type(None):
+            self.dist, self.modelpara = SetEstimateDistrib(self.modeldist.__name__)
         else:
-            self.dist, _ = SetEstimateDistrib(self.modelfunc)
+            self.dist, _ = SetEstimateDistrib(self.modeldist.__name__)
             self.modelpara   = optpara
         self.paranum = len(self.modelpara)
         self.param_output = zeros([self.paranum, self.paranum])
@@ -504,22 +504,22 @@ class LeastSquareOptimize(object):
             self.modelfunc = optfunc
 
     def linearfunc(self, x, p):
-        self.label='y='+str(self.param_output[0][0])+'x+'+str(self.param_output[0][1])
+        self.label = f'y={self.param_output[0][0]:.3f}x+{self.param_output[0][1]:.3f}'
         func = p[0] * x + p[1]
         return func
 
     def powerfunc(self, x, p):
-        self.label='y='+str(self.param_output[0][0])+'x^'+str(self.param_output[0][1])
+        self.label = f'y={self.param_output[0][0]:.3f}x^{self.param_output[0][1]:.3f}'
         func = p[0] * x ** p[1]
         return func
 
     def expfunc(self, x, p):
-        self.label='y='+str(self.param_output[0][0])+'exp('+str(self.param_output[0][1])+'x)'
+        self.label = f'y={self.param_output[0][0]:.3f}exp({self.param_output[0][1]:.3f}x)'
         func = p[0]*exp(p[1]*x)
         return func
 
     def gaussfunc(self, x, p):
-        self.label='y='+str(self.param_output[0][0])+'exp(-x^'+str(self.param_output[0][1])+')'
+        self.label = f'y={self.param_output[0][0]:.3f}exp(-x^{self.param_output[0][1]:.3f})'
         func = p[0]*exp(-x**p[1])
         return func
 
@@ -569,21 +569,19 @@ class LeastSquareOptimize(object):
         y  = self.modelfunc(self.ft_xarray, self.param_output[0])
 
         if plotstyle=='linear':
-            plt.plot(self.xarray, self.data,'.',label='original')
-            plt.plot(self.ft_xarray, y,label=self.label)
+            plotter = plt.plot
         elif plotstyle=='log':
-            plt.loglog(self.xarray, self.data,'.',label='original')
-            plt.loglog(self.ft_xarray, y,label=self.label)
+            plotter = plt.loglog
         elif plotstyle=='semilogy':
-            plt.semilogy(self.xarray, self.data,'.',label='original')
-            plt.semilogy(self.ft_xarray, y,label=self.label)
+            plotter = plt.semilogy
         elif plotstyle=='semilogx':
-            plt.semilogx(self.xarray, self.data,'.',label='original')
-            plt.semilogx(self.ft_xarray, y,label=self.label)
+            plotter = plt.semilogx
         else:
             print("Choose plot style from : linear, log, semilogy, semilogx")
 
-        plt.legend(loc='best')
+        plotter(self.xarray, self.data,'.',label='original')
+        plotter(self.ft_xarray, y, label=self.label)
+        plt.legend(loc='best', frameon=False)
         plt.show()
 
 if __name__=='__main__':
