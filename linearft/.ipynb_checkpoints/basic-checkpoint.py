@@ -35,7 +35,7 @@ def twosidegauss(x, p):
     p[0] : mu
     p[1] : inverse of sigma
     """
-    return 0.5*( p[1] * sqrt(2.0)*exp(-0.5*(p[1]**2)*(x-p[0])**2) ) + 0.5*( p[1] * sqrt(2.0)*exp(-0.5*(p[1]**2)*(x+p[0])**2) )
+    return 0.5*( p[1] * sqrt(2.0*pi)*exp(-0.5*(p[1]**2)*(x-p[0])**2) ) + 0.5*( p[1] * sqrt(2.0*pi)*exp(-0.5*(p[1]**2)*(x+p[0])**2) )
 
 def gauss_cum(x, p):
     """
@@ -178,7 +178,7 @@ def TwoSideMLMittagLeffler(data, p, itr=171):
     #     numpy.cumsum([ (-x*p[1])**(k-1)*coeff[j] for j,k in enumerate(ks) ],dtype=double)
     for i,x in enumerate(data):
         if x < 0:
-            x = -x
+            x *= -1.0
         for k in ks:
             tmp = 0.5*( ((-x*p[1])**(k-1) ) * spsp.gamma(p[0]*k) * sin(pi*p[0]*k) )/spsp.gamma(k)
             # print tmp
@@ -291,7 +291,7 @@ def GetInitParams(estmethod,disttype,data):
             distpara = None
     elif disttype == 'twosidegauss':
         if estmethod == 'leastsq':
-            distpara = array([1.0, 1.])
+            distpara = array([1.4, 1.])
         elif estmethod == 'MEL':
             distpara = None
     elif disttype == 'gamma':
