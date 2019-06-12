@@ -35,7 +35,15 @@ def twosidegauss(x, p):
     p[0] : mu
     p[1] : inverse of sigma
     """
-    return 0.5*( p[1] * sqrt(2.0*pi)*exp(-0.5*(p[1]**2)*(x-p[0])**2) ) + 0.5*( p[1] * sqrt(2.0*pi)*exp(-0.5*(p[1]**2)*(x+p[0])**2) )
+    return 0.5*( p[1] / sqrt(2.0*pi) )*exp(-0.5*(p[1]**2)*(x-p[0])**2)  + 0.5*( p[1] / sqrt(2.0*pi) )*exp(-0.5*(p[1]**2)*(x+p[0])**2) 
+
+def threegauss(x, p):
+    """    
+    p[0] : mu
+    p[1] : inverse of sigma
+    p[2] : inverse of sigma of center distr.
+    """
+    return (p[1]*exp(-0.5*(p[1]**2)*(x-p[0])**2) + p[2]*exp(-0.5*(p[2]**2)*(x)**2) + p[1]*exp(-0.5*(p[1]**2)*(x+p[0])**2)) / (3.0* sqrt(2.0*pi))
 
 def gauss_cum(x, p):
     """
