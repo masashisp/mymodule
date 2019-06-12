@@ -249,6 +249,9 @@ def SetEstimateDistrib(disttype):
     elif disttype == 'twosidegauss':
         paranames = [r'$\mu$', r'$\sigma$']
         dist = twosidegauss
+    elif disttype == 'threegauss':
+        paranames = [r'$\mu$', r'$\sigma_1$', r'$\sigma_2$']
+        dist = threegauss
     elif disttype == 'gauss_cum':
         paranames = [r'$\mu$',r'$\sigma$']
         dist = gauss_cum
@@ -300,6 +303,11 @@ def GetInitParams(estmethod,disttype,data):
     elif disttype == 'twosidegauss':
         if estmethod == 'leastsq':
             distpara = array([1.4, 1.])
+        elif estmethod == 'MEL':
+            distpara = None
+    elif disttype == 'threegauss':
+        if estmethod == 'leastsq':
+            distpara = array([1.4, 1., 1.0])
         elif estmethod == 'MEL':
             distpara = None
     elif disttype == 'gamma':
