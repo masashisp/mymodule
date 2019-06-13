@@ -45,6 +45,15 @@ def threegauss(x, p):
     """
     return (p[1]*exp(-0.5*(p[1]**2)*(x-p[0])**2) + p[2]*exp(-0.5*(p[2]**2)*(x)**2) + p[1]*exp(-0.5*(p[1]**2)*(x+p[0])**2)) / (3.0* sqrt(2.0*pi))
 
+def threegauss2(x, p):
+    """    
+    p[0] : mu
+    p[1] : inverse of sigma
+    p[2] : inverse of sigma of center distr.
+    p[3] : weight: 0 -> 3
+    """
+    return ((1.5-0.5*p[3])*p[1]*exp(-0.5*(p[1]**2)*(x-p[0])**2) + (p[3])*p[2]*exp(-0.5*(p[2]**2)*(x)**2) + (1.5-0.5*p[3])*p[1]*exp(-0.5*(p[1]**2)*(x+p[0])**2)) / (3.0*sqrt(2.0*pi))
+
 def gauss_cum(x, p):
     """
     p[0] : mu, location
@@ -252,6 +261,9 @@ def SetEstimateDistrib(disttype):
     elif disttype == 'threegauss':
         paranames = [r'$\mu$', r'$\sigma_1$', r'$\sigma_2$']
         dist = threegauss
+    elif disttype == 'threegauss2':
+        paranames = [r'$\mu$', r'$\sigma_1$', r'$\sigma_2$', 'weight']
+        dist = threegauss2
     elif disttype == 'gauss_cum':
         paranames = [r'$\mu$',r'$\sigma$']
         dist = gauss_cum
@@ -306,6 +318,11 @@ def GetInitParams(estmethod,disttype,data):
         elif estmethod == 'MEL':
             distpara = None
     elif disttype == 'threegauss':
+        if estmethod == 'leastsq':
+            distpara = array([1.4, 1., 1.0])
+        elif estmethod == 'MEL':
+            distpara = None
+    elif disttype == 'threegauss2':
         if estmethod == 'leastsq':
             distpara = array([1.4, 1., 1.0])
         elif estmethod == 'MEL':
