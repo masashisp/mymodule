@@ -27,8 +27,8 @@ class PlotOptions(object):
 
 def color_line_style_generator():
     linestyle = ['-', '--', '-.', ':']
-    markerstyle = ['h', '^', 'v', 's', '2', '<', '>', '2', '3', '4', '8', 'p', '*', 'H', '+', ',', '.', 'x', 'o', 'D', 'd', '|', '_']
-    mfcstyle = ['b', 'g', 'r', 'c', 'm', 'y', 'k', 'w']
+    markerstyle = ['h', '^', 'v', 's', '2', '<', '>', '3', '4', '8', 'p', '*', 'H', '+', ',', '.', 'x', 'o', 'D', 'd', '|', '_']
+    mfcstyle = ['b', 'g', 'r', 'c', 'm', 'y', 'k']
     line_idx = 0
     marker_idx = 0
     mfc_idx = 0
@@ -48,7 +48,7 @@ def monochrome_style_generator():
         line_idx = (line_idx + 1) % len(linestyle)
         marker_idx = (marker_idx + 1) % len(markerstyle)
 
-def color_points_style_generator():
+def ”points_style_generator():
     markerstyle = ['h', '^', 'v', 's', '2', '<', '>', '2', '3', '4', '8', 'p', '*', 'H', '+', ',', '.', 'x', 'o', 'D', 'd', '|', '_']
     mfcstyle = ['b', 'g', 'r', 'c', 'm', 'y', 'k']#, 'w']
     marker_idx = 0
