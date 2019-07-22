@@ -54,6 +54,13 @@ def threegauss2(x, p):
     """
     return ((1.5-0.5*p[3])*p[1]*exp(-0.5*(p[1]**2)*(x-p[0])**2) + (p[3])*p[2]*exp(-0.5*(p[2]**2)*(x)**2) + (1.5-0.5*p[3])*p[1]*exp(-0.5*(p[1]**2)*(x+p[0])**2)) / (3.0*sqrt(2.0*pi))
 
+def doublewell(x,p):
+    """
+    p[0] : b
+    p[1] : a
+    """
+    return np.exp(-p[1]*x**2+p[0]*x**4)
+
 def gauss_cum(x, p):
     """
     p[0] : mu, location
