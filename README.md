@@ -1,2 +1,2 @@
 # mymodule
-My python wrappers
+My python wrappers for scientific research
